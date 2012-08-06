@@ -166,7 +166,36 @@ class ToprequestersReport:
         return 'TOPREQUESTERS_CACHED_' + str(value)
 
     @staticmethod
+    def is_cached(value):
+        """True is there is something under report key in the cache."""
+        return ToprequestersReport.get_report_data(value) is not None
+
+    @staticmethod
     def get_report_data(value):
         """Returns report data if available or None."""
         key = ToprequestersReport.get_cache_key(value)
         return cache.get(key)
+
+    @staticmethod
+    def get_available_str():
+        """Returns a string consising of lines:
+
+            [available] id - Display name
+
+        Example:
+
+            [x] 0 - Hits available
+            [ ] 1 - Hits posted
+
+        """
+        lines = []
+        for rid, name in ToprequestersReport.display_names.iteritems():
+            in_cache = ToprequestersReport.is_cached(rid)
+            in_cache = '[x]' if in_cache else '[ ]'
+            lines.append("\n{0} {1} - {2}".format(in_cache, rid, name))
+        lines.append('\n')
+        return ''.join(lines)
+
+    @staticmethod
+    def store():
+        pass
